@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Losowy przedmiot</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 40px;
+      background: #f0f0f0;
+    }
+
+    img {
+      max-width: 80%;
+      height: auto;
+      border: 4px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .item-name {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .item-type {
+      font-size: 18px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Losowy przedmiot</h1>
+  <img id="itemImage" alt="Wczytywanie..." />
+  <div class="item-name" id="itemName"></div>
+  <div class="item-type" id="itemType"></div>
+
+  <script>
+    fetch('items_json.json')
+      .then(response => response.json())
+      .then(data => {
+        const keys = Object.keys(data);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const item = data[randomKey];
+
+        // Pobierz wartość z pola 'image_source' jako ścieżkę do obrazka
+        const imagePath = 'images/' + (item.image_source + '.jpg' || '');
+        document.getElementById('itemImage').src = imagePath;
+        document.getElementById('itemName').textContent = item.name || 'Brak nazwy';
+        document.getElementById('itemType').textContent = item.itemRarityTypeId || '';
+        document.getElementById('itemName').style.color = item.colorId || '#000';
+
+        // Automatyczne pobieranie pliku graficznego po załadowaniu strony
+        const link = document.createElement('a');
+        link.href = imagePath;
+        link.download = item.image_source + '.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(error => {
+        console.error('Błąd ładowania JSON:', error);
+      });
+  </script>
+</body>
+</html>
